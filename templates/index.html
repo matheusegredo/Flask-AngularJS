@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+
+<html lang="en" ng-app="todo">
+<head>
+    <meta charset="UTF-8">
+    <title>AngularJS - Todo App</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <style>
+        .finalized {
+            text-decoration: line-through !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="jumbotron">
+            <h1>Formulário de Cadastro</h1>            
+        </div>
+
+        <hr>
+        <div ng-controller="GetCtrl">           
+                <div class="container">
+				<form class="form-horizontal" ng-submit="insertResults()">   
+				<div class="row">
+					<div class="col">
+						<input type="text" class="form-control" placeholder="Nome" ng-value="alterar.name" ng-model="name" required>
+					</div>
+				</div><br>	
+				<!--<div class="row">
+					<div class="col">
+						<input type="email" class="form-control" placeholder="E-mail" ng-model="email" required>
+					</div>
+    			</div><br>
+				<div class="row">
+					<div class="col">
+						<input type="text" class="form-control" placeholder="CPF" ng-model="cpf" required>
+					</div>
+				</div><br>
+				<div class="row">	
+					<div class="col">
+						<input type="text" class="form-control" placeholder="Telefone" ng-model="telefone" required>
+					</div>
+				</div><br>-->
+				<div class="row">	
+					<div class="col">
+						<input type="password" class="form-control" placeholder="Senha" ng-value="alterar.password" ng-model="password" required>					
+					</div>
+				</div>	
+				<br>				
+				<div class="row">
+					<div class="col-sm-2">
+                        <button type="submit" class="btn btn-block btn-primary">
+                            Inserir
+                        </button>
+                   </div>
+				</div>				
+                </form>   
+			</div>
+            <br>
+			<hr>
+		<table class='table table-striped'>
+			<thead>
+			    <tr>
+			    <th>Nome:</th>
+				<th>E-mail</th>
+				<th>CPF:</th>
+				<th>Telefone</th>
+				<th>Senha:</th>
+				</tr>
+			</thead>
+			<tbody ng-repeat="x in list">
+                <tr>                    
+            <td>[[ x.name ]]</td>
+			<td>[[ x.password ]]</td>
+			<td>[[  ]]</td>
+			<td><a href="#" id="[[ x.public_id ]]" ng-click="Editar([[ x.public_id ]])">Alterar</a></td>
+            <td><a href="#" id="[[ x.public_id ]]" ng-click="Delete([[ x.public_id ]])">Remover</a></td>                   
+                </tr>
+            </tbody>
+    </table>
+            	
+        </div>
+    </div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+    <script>
+
+    var app = angular.module('todo', []);
+
+    	app.controller('GetCtrl', ['$scope', '$http', '$log', function($scope, $http, $log)	{
+              
+		$scope.insertResults = function() {			
+					
+			var userName = $scope.name;
+			var userPass = $scope.password;
+
+			$http.post('/users', {name: userName, password: userPass})
+			console.log("Usuario adicionado");
+			history.go(0);
+			};
+	
+		$scope.Editar = function (public_id){
+			
+			$http.get("/users/" + public_id).then(function(response)
+			{	
+				$scope.alterar = response.data.user;
+				console.log(response.data.user);
+			});
+			};
+		
+		$scope.Delete = function deletar(public_id){
+		
+			$http.delete("/users/" + public_id);
+			console.log("Usuario excluido");
+			history.go(0);
+		};
+		
+		
+		
+		$scope.delete = function(public_id)
+		{
+			$scope.search_delete = public_id;
+		};
+		
+		$scope.select = function(){
+			this.setSelectionRange(0, this.value.length);
+		}
+		
+		
+		$http.get("/users").then(function(response) {
+			console.log(response.data.users);		
+			$scope.list = response.data.users;            			
+		});
+		
+		
+	}])
+	
+	app.config(function($interpolateProvider) {
+		$interpolateProvider.startSymbol("[[");
+		$interpolateProvider.endSymbol("]]");
+	});
+    </script>
+</body>
+
+</html>

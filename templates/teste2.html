@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+
+<html lang="en" ng-app="todo">
+<head>
+    <meta charset="UTF-8">
+    <title>AngularJS - Todo App</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <style>
+        .finalized {
+            text-decoration: line-through !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="jumbotron">
+            <h1>Formulário de Cadastro</h1>            
+        </div>
+
+        <hr>
+        <div ng-controller="TodoCtrl">           
+                <form class="form-horizontal" ng-submit="addItem()">
+				<div class="form-group">                    
+				
+             		<div class="col-sm-6"><input type="text" class="form-control" placeholder="Nome" ng-model="nome" required></div>
+					<div class="col-sm-6"><input type="email" class="form-control" placeholder="E-mail" ng-model="email" required></div>	
+			
+     			</div>
+				<div class="form-group">
+				
+					<div class="col-sm-4"><input type="text" class="form-control" placeholder="CPF" ng-model="cpf" required></div>
+					<div class="col-sm-4"><input type="text" class="form-control" placeholder="Telefone" ng-model="telefone" required></div>
+					<div class="col-sm-4"><input type="password" class="form-control" placeholder="Senha" ng-model="senha" required></div>					
+				
+				</div>
+				<div class="form-group">
+					<div class="col-sm-1">
+                        <button type="submit" class="btn btn-block btn-primary">
+                            Inserir
+                        </button>
+                    </div>
+                </div>					
+                </form>           
+            <br>
+			<hr>
+    <table class='table table-striped'>
+			<thead>
+			    <tr>
+			        <th>Nome:</th>
+				<th>E-mail</th>
+				<th>CPF:</th>
+				<th>Telefone</th>
+				<th>Senha:</th>
+				</tr>
+			</thead>
+			<tbody ng-repeat="item in items">
+                <tr>                    
+            <td>{{ item.nome }}</td>
+			<td>{{ '{{ item.email }}' }}</td>
+			<td>{{ '{{ item.cpf }}' }}</td>
+			<td>{{ '{{ item.telefone }}' }}</td>
+            <td>{{ '{{ item.senha }}' }}</td>                   
+                </tr>
+            </tbody>
+    </table>
+            		
+        </div>
+    </div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+    <script type="text/javascript">
+
+    var app = angular.module('todo', []);
+
+    app.controller('TodoCtrl', function($scope, $http) {
+        $scope.items = [
+            {nome: 'Matheus', email: 'mdelsegredo@hotmail.com', cpf: '455.419.198-27', telefone: '981950088', senha: '1234'},            
+        ];        
+		
+        $scope.addItem = function() {
+            $scope.items.push({
+            nome: $scope.nome,
+            senha: $scope.senha,             
+            });
+
+            $scope.nome = '';
+	    $scope.email = '';
+           
+	} 
+        };
+    );
+    </script>
+</body>
+
+</html>
