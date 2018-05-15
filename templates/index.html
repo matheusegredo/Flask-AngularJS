@@ -23,37 +23,32 @@
 				<form class="form-horizontal" ng-submit="insertResults()">   
 				<div class="row">
 					<div class="col">
-						<input type="text" class="form-control" placeholder="Nome" ng-value="alterar.name" ng-model="name" required>
+						<input type="text" class="form-control" placeholder="Nome" ng-model="name" required>
 					</div>
 				</div><br>	
-				<!--<div class="row">
+				<div class="row">	
 					<div class="col">
-						<input type="email" class="form-control" placeholder="E-mail" ng-model="email" required>
-					</div>
-    			</div><br>
-				<div class="row">
-					<div class="col">
-						<input type="text" class="form-control" placeholder="CPF" ng-model="cpf" required>
+						<input type="text" class="form-control" placeholder="Senha" ng-model="password" required>					
 					</div>
 				</div><br>
+				<div class="row">
+					<div class="col">
+						<input type="cpf" class="form-control" placeholder="CPF" ng-model="cpf" required>
+					</div> 
+    			</div><br>
 				<div class="row">	
 					<div class="col">
 						<input type="text" class="form-control" placeholder="Telefone" ng-model="telefone" required>
 					</div>
-				</div><br>-->
-				<div class="row">	
-					<div class="col">
-						<input type="password" class="form-control" placeholder="Senha" ng-value="alterar.password" ng-model="password" required>					
-					</div>
-				</div>	
+				</div><br>					
 				<br>				
 				<div class="row">
 					<div class="col-sm-2">
                         <button type="submit" class="btn btn-block btn-primary">
-                            Inserir
+                            [[button]]
                         </button>
                    </div>
-				</div>				
+                   </div>				
                 </form>   
 			</div>
             <br>
@@ -62,19 +57,22 @@
 			<thead>
 			    <tr>
 			    <th>Nome:</th>
-				<th>E-mail</th>
+				<th>Senha</th>
 				<th>CPF:</th>
 				<th>Telefone</th>
-				<th>Senha:</th>
+				<th>Acao:</th>
 				</tr>
 			</thead>
 			<tbody ng-repeat="x in list">
                 <tr>                    
-            <td>[[ x.name ]]</td>
-			<td>[[ x.password ]]</td>
-			<td>[[  ]]</td>
-			<td><a href="#" id="[[ x.public_id ]]" ng-click="Editar([[ x.public_id ]])">Alterar</a></td>
-            <td><a href="#" id="[[ x.public_id ]]" ng-click="Delete([[ x.public_id ]])">Remover</a></td>                   
+            <td>[[x.name]]</td>
+			<td>[[x.password]]</td>
+			<td>[[x.cpf]]</td>
+			<td>[[x.telefone]]</td>
+            <td>
+			<a href="#" id="[[ x.public_id ]]" ng-click="Delete([[ x.public_id ]])">Remover</a>
+			<a href="#" id="[[ x.public_id ]]" ng-click="Editar([[ x.public_id ]])">Alterar</a>
+			</td>                   
                 </tr>
             </tbody>
     </table>
@@ -87,23 +85,37 @@
 
     var app = angular.module('todo', []);
 
-    	app.controller('GetCtrl', ['$scope', '$http', '$log', function($scope, $http, $log)	{
-              
+    	app.controller('GetCtrl', ['$scope', '$http', function($scope, $http)	{
+         
+		$scope.id = null;
+		$scope.button = "Inserir";
 		$scope.insertResults = function() {			
 					
-			var userName = $scope.name;
-			var userPass = $scope.password;
-
-			$http.post('/users', {name: userName, password: userPass})
+			if ($scope.id == null) {
+			$http.post('/users', {name: $scope.name, password: $scope.password, cpf: $scope.cpf, telefone: $scope.telefone})
 			console.log("Usuario adicionado");
+			}
+			else {
+			$http.put('/user/' + $scope.id, {name: $scope.name, password: $scope.password, cpf: $scope.cpf, telefone: $scope.telefone})
+			.then(function(response)
+			{
+				console.log(response)
+			});
+			}
 			history.go(0);
 			};
-	
+
+		
 		$scope.Editar = function (public_id){
-			
-			$http.get("/users/" + public_id).then(function(response)
+
+			$scope.button = "Alterar";			
+			$http.get("/user/" + public_id).then(function(response)
 			{	
-				$scope.alterar = response.data.user;
+				$scope.id = public_id;
+				$scope.name = response.data.user.name;
+				$scope.password = response.data.user.password
+				$scope.cpf = response.data.user.cpf
+				$scope.telefone = response.data.user.telefone
 				console.log(response.data.user);
 			});
 			};
