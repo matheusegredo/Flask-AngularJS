@@ -5,7 +5,7 @@ import uuid
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = 'thisissecret'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////home/matheusegredo/python/venv/app/todo.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:12345@localhost/usuarios'
 
 db = SQLAlchemy(app)
 
@@ -21,12 +21,7 @@ class User(db.Model):
 
 @app.route('/')
 def index():
-    item = int
-    return render_template('index.html', item=item)
-
-@app.route('/teste')
-def teste():
-    return render_template('teste.html')
+    return render_template('index.html')
 
 @app.route('/users', methods=['GET'])
 def get_all_users():
@@ -46,7 +41,7 @@ def get_all_users():
    
     return jsonify({'users' : output}) 
 
-@app.route('/user/<public_id>', methods=['GET'])
+@app.route('/users/<public_id>', methods=['GET'])
 def get_user(public_id):
 
     user = User.query.filter_by(public_id=public_id).first()
@@ -71,7 +66,7 @@ def create_user():
     
     return jsonify({'message' : 'Usuario criado' })
 
-@app.route('/user/<public_id>', methods=['PUT'])
+@app.route('/users/<public_id>', methods=['PUT'])
 def promote_user(public_id):
     
     data = request.get_json()

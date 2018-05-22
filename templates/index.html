@@ -75,54 +75,66 @@
 			</td>                   
                 </tr>
             </tbody>
-    </table>
+        </table>
             	
         </div>
     </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+<script src="https://code.angularjs.org/1.6.9/angular-resource.min.js"></script>
     <script>
 
-    var app = angular.module('todo', []);
+    var app = angular.module('todo', ["ngResource"]);
 
-    	app.controller('GetCtrl', ['$scope', '$http', function($scope, $http)	{
+    	app.factory('Users', ['$resource', function($resource) {
+  			return $resource('/users/:public_id', null, 
+  				{
+  					'update': { method: 'PUT'}
+  				});
+		}]);
+
+		app.controller('GetCtrl', ['$scope', '$http', 'Users', function($scope, $http, Users)	{
          
 		$scope.id = null;
 		$scope.button = "Inserir";
+
+		Users.get(function(data) {
+   			$scope.list = data.users;
+   			console.log(data.users);
+ 		});
+
 		$scope.insertResults = function() {			
 					
-			if ($scope.id == null) {
-			$http.post('/users', {name: $scope.name, password: $scope.password, cpf: $scope.cpf, telefone: $scope.telefone})
-			console.log("Usuario adicionado");
-			}
-			else {
-			$http.put('/user/' + $scope.id, {name: $scope.name, password: $scope.password, cpf: $scope.cpf, telefone: $scope.telefone})
-			.then(function(response)
-			{
-				console.log(response)
-			});
-			}
-			history.go(0);
+				var user = new Users();
+				user.name = $scope.name;
+ 				user.password = $scope.password;
+ 				user.cpf = $scope.cpf;
+ 				user.telefone = $scope.telefone;
+  				
+  				if ($scope.id == null) user.$save();
+  				else user.$update( { public_id: $scope.id });  		
+
+			    history.go(0);
 			};
 
 		
 		$scope.Editar = function (public_id){
 
 			$scope.button = "Alterar";			
-			$http.get("/user/" + public_id).then(function(response)
+			Users.get({ public_id: public_id }, function(data)
 			{	
-				$scope.id = public_id;
-				$scope.name = response.data.user.name;
-				$scope.password = response.data.user.password
-				$scope.cpf = response.data.user.cpf
-				$scope.telefone = response.data.user.telefone
-				console.log(response.data.user);
+				$scope.id = data.user.public_id;
+				$scope.name = data.user.name;
+				$scope.password = data.user.password;
+				$scope.cpf = data.user.cpf;
+				$scope.telefone = data.user.telefone;
+				console.log(data.user);
 			});
 			};
 		
 		$scope.Delete = function deletar(public_id){
 		
-			$http.delete("/users/" + public_id);
+			Users.remove({ public_id: public_id });
 			console.log("Usuario excluido");
 			history.go(0);
 		};
@@ -138,14 +150,8 @@
 			this.setSelectionRange(0, this.value.length);
 		}
 		
-		
-		$http.get("/users").then(function(response) {
-			console.log(response.data.users);		
-			$scope.list = response.data.users;            			
-		});
-		
-		
-	}])
+			
+		}])
 	
 	app.config(function($interpolateProvider) {
 		$interpolateProvider.startSymbol("[[");
