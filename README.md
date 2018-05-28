@@ -6,4 +6,6 @@ Funções até o momento:<br>
 Inserir [ok]<br>
 Remover [ok]<br>
 Exibir  [ok]<br>
-Alterar [  ]
+Alterar [OK]<br>
+
+Banco de dados: Postgres.
