@@ -23,6 +23,18 @@ class User(db.Model):
 def index():
     return render_template('index.html')
 
+@app.route('/js/main_controller.js')
+def controller():
+    return render_template('main_controller.js')
+	
+@app.route('/js/main_module.js')
+def module():
+    return render_template('main_module.js')
+	
+@app.route('/js/main_factory.js')
+def factory():
+    return render_template('main_factory.js')
+
 @app.route('/users', methods=['GET'])
 def get_all_users():
     
